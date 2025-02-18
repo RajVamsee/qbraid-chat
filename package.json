@@ -9,25 +9,19 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
-  "main": "./dist/extension.js",
+  "main": "./out/index.js",
   "contributes": {
     "commands": [
       {
-        "command": "qbraid-chat.helloWorld",
-        "title": "Hello World"
+        "command": "qbraid-chat.myChatCommand",
+        "title": "Chat with qBraid"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "webpack",
-    "watch": "webpack --watch",
+    "compile": "tsc",
+    "watch": "tsc --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "lint": "eslint src",
     "test": "vscode-test"
   },
   "devDependencies": {
