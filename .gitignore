@@ -11,3 +11,15 @@ out/
 # Ignore package lock file (optional, if using npm)
 package-lock.json
 yarn.lock
+
+# Ignore compiled TypeScript files
+*.js.map
+*.js
+
+# Ignore VS Code extension package
+*.vsix
+
+# Ignore logs and temporary files
+npm-debug.log*
+.DS_Store
+Thumbs.db
