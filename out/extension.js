@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
+const api_1 = require("./api");
 const API_KEY_STORAGE_KEY = 'qbraidApiKey'; // Key to store API key in global state
 function activate(context) {
     console.log('qBraid-Chat extension activated.');
@@ -43,12 +44,12 @@ function activate(context) {
     let setApiKeyCommand = vscode.commands.registerCommand('qbraid-chat.setApiKey', async () => {
         const apiKey = await vscode.window.showInputBox({
             prompt: 'Enter your qBraid API Key',
-            ignoreFocusOut: true, // Keeps the input box open even if the user clicks elsewhere
+            ignoreFocusOut: true,
             placeHolder: 'Your API Key here...',
-            password: true // Hides input for security
+            password: true
         });
         if (apiKey) {
-            context.globalState.update(API_KEY_STORAGE_KEY, apiKey);
+            await context.globalState.update(API_KEY_STORAGE_KEY, apiKey);
             vscode.window.showInformationMessage('API Key saved successfully!');
         }
         else {
@@ -57,7 +58,7 @@ function activate(context) {
     });
     // Command to view the stored API key (for debugging, should be removed before final submission)
     let viewApiKeyCommand = vscode.commands.registerCommand('qbraid-chat.viewApiKey', () => {
-        const storedKey = context.globalState.get(API_KEY_STORAGE_KEY);
+        const storedKey = getStoredApiKey(context);
         if (storedKey) {
             vscode.window.showInformationMessage(`Stored API Key: ${storedKey}`);
         }
@@ -65,8 +66,27 @@ function activate(context) {
             vscode.window.showWarningMessage('No API Key found. Please set it using the command.');
         }
     });
+    // Command to fetch chat models from qBraid API
+    let fetchModelsCommand = vscode.commands.registerCommand('qbraid-chat.getModels', async () => {
+        const apiKey = getStoredApiKey(context);
+        if (!apiKey) {
+            vscode.window.showWarningMessage('API Key not set. Please set it using "Set qBraid API Key" command.');
+            return;
+        }
+        const models = await (0, api_1.getChatModels)(apiKey);
+        if (models.length > 0) {
+            vscode.window.showInformationMessage(`Available Models: ${models.join(', ')}`);
+        }
+        else {
+            vscode.window.showErrorMessage("No models found or failed to fetch.");
+        }
+    });
     // Register commands
-    context.subscriptions.push(setApiKeyCommand, viewApiKeyCommand);
+    context.subscriptions.push(setApiKeyCommand, viewApiKeyCommand, fetchModelsCommand);
+}
+// Function to retrieve the stored API key
+function getStoredApiKey(context) {
+    return context.globalState.get(API_KEY_STORAGE_KEY);
 }
 function deactivate() { }
 //# sourceMappingURL=extension.js.map

@@ -13,16 +13,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "qbraid-chat.myChatCommand",
-        "title": "Chat with qBraid"
-      },
-      {
         "command": "qbraid-chat.setApiKey",
         "title": "Set qBraid API Key"
       },
       {
         "command": "qbraid-chat.viewApiKey",
         "title": "View Stored API Key"
+      },
+      {
+        "command": "qbraid-chat.getModels",
+        "title": "Fetch Available Chat Models"
       }
     ]
   },
@@ -48,6 +48,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "node-fetch": "^3.3.2",
     "qbraid-chat": "file:"
   },
   "repository": {
