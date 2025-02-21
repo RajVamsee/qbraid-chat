@@ -1,6 +1,15 @@
-.vscode/**
-.vscode-test/**
-node_modules/**
+.vscode/
+.vscode-test/
+node_modules/
+
+# Ignore dist/ folder but not out/
+dist/
+
+# Ensure 'out/' folder and compiled files are included
+!out/
+!out/extension.js
+
+# Ignore unnecessary files
 .gitignore
 .yarnrc
 webpack.config.js
