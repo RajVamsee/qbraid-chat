@@ -1,8 +1,8 @@
 {
   "name": "qbraid-chat",
-  "displayName": "qbraid-chat",
-  "description": "This is a VS Code extension that provides a chat interface for interacting with qBraid's AI models.",
-  "version": "0.0.2",
+  "displayName": "qBraid Chat",
+  "description": "VS Code extension to interact with qBraid AI chat models.",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.97.0"
   },
@@ -17,16 +17,8 @@
         "title": "Set qBraid API Key"
       },
       {
-        "command": "qbraid-chat.viewApiKey",
-        "title": "View Stored API Key"
-      },
-      {
-        "command": "qbraid-chat.getModels",
-        "title": "Fetch Available Chat Models"
-      },
-      {
-        "command": "qbraid-chat.sendMessage",
-        "title": "Send Chat Message"
+        "command": "qbraid-chat.openChat",
+        "title": "Open qBraid Chat"
       }
     ]
   },
@@ -34,19 +26,9 @@
     "compile": "tsc",
     "watch": "tsc --watch",
     "package": "npm run compile && webpack --mode production --devtool hidden-source-map",
-    "test": "vscode-test",
     "vsce:package": "npm run package && vsce package"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
-    "@types/vscode": "^1.97.0",
-    "@typescript-eslint/eslint-plugin": "^8.22.0",
-    "@typescript-eslint/parser": "^8.22.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1",
-    "eslint": "^9.19.0",
-    "ts-loader": "^9.5.2",
     "typescript": "^5.7.3",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1"
@@ -54,9 +36,5 @@
   "dependencies": {
     "node-fetch": "^3.3.2",
     "qbraid-chat": "file:"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/RajVamsee/qbraid-chat.git"
   }
 }

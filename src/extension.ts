@@ -23,79 +23,172 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    // Command to view the stored API key (for debugging, should be removed before final submission)
-    let viewApiKeyCommand = vscode.commands.registerCommand('qbraid-chat.viewApiKey', () => {
-        const storedKey = getStoredApiKey(context);
-        if (storedKey) {
-            vscode.window.showInformationMessage(`Stored API Key: ${storedKey}`);
-        } else {
-            vscode.window.showWarningMessage('No API Key found. Please set it using the command.');
-        }
-    });
-
-    // Command to fetch chat models from qBraid API
-    let fetchModelsCommand = vscode.commands.registerCommand('qbraid-chat.getModels', async () => {
-        const apiKey = getStoredApiKey(context);
-        if (!apiKey) {
-            vscode.window.showWarningMessage('API Key not set. Please set it using "Set qBraid API Key" command.');
-            return;
-        }
-
-        const models = await getChatModels(apiKey);
-        if (models) {
-            const modelNames = models.map(model => model.model).join(', ');
-            vscode.window.showInformationMessage(`Available Models: ${modelNames}`);
-        }
-    });
-
-    //Command: Send Chat Message
-    let sendMessageCommand = vscode.commands.registerCommand('qbraid-chat.sendMessage', async () => {
-        const apiKey = getStoredApiKey(context);
-        if (!apiKey) {
-            vscode.window.showWarningMessage('API Key not set. Please set it using "Set qBraid API Key" command.');
-            return;
-        }
-
-        const models = await getChatModels(apiKey);
-        if (!models || models.length === 0) {
-            vscode.window.showWarningMessage('No chat models available. Please try again later.');
-            return;
-        }
-
-        // Prompt user to select a model
-        const selectedModel = await vscode.window.showQuickPick(models.map(model => model.model), {
-            placeHolder: 'Select a chat model'
-        });
-
-        if (!selectedModel) {
-            vscode.window.showWarningMessage('No model selected.');
-            return;
-        }
-
-        // Prompt user to enter a message
-        const userMessage = await vscode.window.showInputBox({
-            prompt: 'Enter your message',
-            ignoreFocusOut: true
-        });
-
-        if (!userMessage) {
-            vscode.window.showWarningMessage('No message entered.');
-            return;
-        }
-
-        // Send message
-        vscode.window.showInformationMessage('Sending message...');
-        const response = await sendChatMessage(apiKey, selectedModel, userMessage);
-
-        if (response) {
-            vscode.window.showInformationMessage(`Chat Response: ${response}`);
-        } else {
-            vscode.window.showErrorMessage('Failed to get a response from the chat.');
-        }
+    // Command to Open Chat UI
+    let openChatCommand = vscode.commands.registerCommand('qbraid-chat.openChat', async () => {
+        openChatUI(context);
     });
 
     // Register commands
-    context.subscriptions.push(setApiKeyCommand, viewApiKeyCommand, fetchModelsCommand, sendMessageCommand);
+    context.subscriptions.push(setApiKeyCommand, openChatCommand);
+}
+
+// Function to open the Webview Panel for Chat
+function openChatUI(context: vscode.ExtensionContext) {
+    const panel = vscode.window.createWebviewPanel(
+        'qbraidChat',
+        'qBraid Chat',
+        vscode.ViewColumn.One,
+        {
+            enableScripts: true, // Allow JavaScript execution in Webview
+        }
+    );
+
+    panel.webview.html = getChatWebviewContent();
+
+    // Handle messages from Webview
+    panel.webview.onDidReceiveMessage(async (message) => {
+        if (message.command === "sendMessage") {
+            const apiKey = getStoredApiKey(context);
+            if (!apiKey) {
+                panel.webview.postMessage({ command: "error", text: "API Key is not set. Please set it first." });
+                return;
+            }
+
+            // Get available models
+            const models = await getChatModels(apiKey);
+            if (!models || models.length === 0) {
+                panel.webview.postMessage({ command: "error", text: "No chat models available. Try again later." });
+                return;
+            }
+
+            const selectedModel = models[0].model; // Automatically selecting the first model for now
+
+            // Send the chat message
+            const response = await sendChatMessage(apiKey, selectedModel, message.text);
+
+            if (response) {
+                panel.webview.postMessage({ command: "botResponse", text: response });
+            } else {
+                panel.webview.postMessage({ command: "error", text: "Failed to get a response from the AI." });
+            }
+        }
+    });
+}
+
+// Function to generate Webview UI
+function getChatWebviewContent(): string {
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>qBraid Chat</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #FFD1DC; /* Light Pink */
+                color: #333;
+                padding: 20px;
+                text-align: center;
+            }
+            #chat-container {
+                width: 90%;
+                max-width: 600px;
+                margin: auto;
+                background: white;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            }
+            #chat-box {
+                height: 300px;
+                overflow-y: auto;
+                border: 1px solid #ccc;
+                padding: 10px;
+                background: #fff;
+                text-align: left;
+            }
+            .message {
+                margin: 5px 0;
+                padding: 8px;
+                border-radius: 5px;
+            }
+            .user-message {
+                background-color: #ffb6c1;
+                text-align: right;
+            }
+            .bot-message {
+                background-color: #d3d3d3;
+                text-align: left;
+            }
+            #input-box {
+                width: 80%;
+                padding: 10px;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+            #send-btn {
+                padding: 10px;
+                background: #ff4081;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            #send-btn:hover {
+                background: #d81b60;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>qBraid Chat</h2>
+        <div id="chat-container">
+            <div id="chat-box"></div>
+            <input type="text" id="input-box" placeholder="Type your message..." />
+            <button id="send-btn">Send</button>
+        </div>
+
+        <script>
+            const vscode = acquireVsCodeApi();
+
+            document.getElementById("send-btn").addEventListener("click", () => {
+                const inputBox = document.getElementById("input-box");
+                const message = inputBox.value.trim();
+                if (!message) return;
+
+                // Display user message
+                appendMessage(message, "user-message");
+
+                // Send message to extension
+                vscode.postMessage({
+                    command: "sendMessage",
+                    text: message
+                });
+
+                inputBox.value = "";
+            });
+
+            function appendMessage(text, className) {
+                const chatBox = document.getElementById("chat-box");
+                const messageDiv = document.createElement("div");
+                messageDiv.className = "message " + className;
+                messageDiv.textContent = text;
+                chatBox.appendChild(messageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            window.addEventListener("message", (event) => {
+                if (event.data.command === "botResponse") {
+                    appendMessage(event.data.text, "bot-message");
+                } else if (event.data.command === "error") {
+                    alert(event.data.text);
+                }
+            });
+        </script>
+    </body>
+    </html>
+    `;
 }
 
 // Function to retrieve the stored API key
