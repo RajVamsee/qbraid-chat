@@ -17,22 +17,32 @@ async function fetchData<T>(url: string, apiKey: string, method: string = 'GET',
             options.body = JSON.stringify(body);
         }
 
+        console.log("🟢 API Request:", url);
+        console.log("📌 Request Headers:", options.headers);
+        console.log("📩 Request Body:", options.body || "No Body");
+
         const response = await fetch(url, options);
 
+        console.log("🔵 Raw Response Status:", response.status);
+        console.log("📩 Raw Response Headers:", response.headers.raw());
+
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status} - ${await response.text()}`);
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const jsonData = await response.json();
+        console.log("✅ Parsed Response:", JSON.stringify(jsonData, null, 2));
+
         return jsonData as T; // ✅ Explicitly cast response to expected type
     } catch (error: any) {
         vscode.window.showErrorMessage(`Error fetching data: ${error.message}`);
+        console.error("❌ API Fetch Error:", error);
         return null;
     }
 }
 
 // ✅ Define a proper response type for models
-interface ChatModel {
+interface ChatModelsResponse {
     model: string;
     description: string;
     pricing: {
@@ -43,26 +53,37 @@ interface ChatModel {
 }
 
 // Function to get available chat models from qBraid API
-export async function getChatModels(apiKey: string): Promise<string[]> {
+export async function getChatModels(apiKey: string): Promise<ChatModelsResponse[] | null> {
     const url = 'https://api.qbraid.com/api/chat/models'; // ✅ Corrected endpoint
-    const response = await fetchData<ChatModel[]>(url, apiKey);
+    const response = await fetchData<ChatModelsResponse[]>(url, apiKey);
 
     if (!response) {
         vscode.window.showErrorMessage('Failed to fetch chat models. Please check your API key.');
-        return [];
+        return null;
     }
 
-    // Extract and return readable model names
-    return response.map(modelObj => modelObj.model);
+    return response;
 }
 
-// Function to send a message to the qBraid chat API
-export async function sendChatMessage(apiKey: string, model: string, message: string) {
+// ✅ Function to send a chat message to qBraid API
+export async function sendChatMessage(apiKey: string, model: string, message: string): Promise<string | null> {
     const url = 'https://api.qbraid.com/api/chat'; // ✅ Corrected endpoint
     const body = {
         model,
-        messages: [{ role: 'user', content: message }]
+        prompt: message, // ✅ API expects 'prompt', not 'messages'
+        stream: false    // ✅ Explicitly set stream to false (matches API example)
     };
 
-    return fetchData(url, apiKey, 'POST', body);
+    console.log("🟡 Sending chat message:", JSON.stringify(body, null, 2));
+
+    const response = await fetchData<{ content: string }>(url, apiKey, 'POST', body);
+
+    console.log("🔵 Chat API Response:", response);
+
+    if (!response || !response.content) {
+        vscode.window.showErrorMessage('Failed to get a response from the chat.');
+        return null;
+    }
+
+    return response.content;
 }

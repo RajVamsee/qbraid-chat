@@ -23,6 +23,10 @@
       {
         "command": "qbraid-chat.getModels",
         "title": "Fetch Available Chat Models"
+      },
+      {
+        "command": "qbraid-chat.sendMessage",
+        "title": "Send Chat Message"
       }
     ]
   },
