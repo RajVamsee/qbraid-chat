@@ -4,17 +4,16 @@ node_modules/
 # Ignore Visual Studio Code workspace settings
 .vscode/
 
-# Ignore build output folders
+# Ignore build output folders (EXCEPT out/)
 dist/
-out/
 
-# Ignore package lock file (optional, if using npm)
-package-lock.json
-yarn.lock
+# Do NOT ignore out/ because we need compiled JavaScript files in packaging
+!.out/
+!.out/extension.js
 
-# Ignore compiled TypeScript files
-*.js.map
-*.js
+# Ignore compiled TypeScript files (ONLY in src/, NOT in out/)
+src/**/*.js.map
+src/**/*.js
 
 # Ignore VS Code extension package
 *.vsix

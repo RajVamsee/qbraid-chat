@@ -6,8 +6,12 @@ node_modules/
 dist/
 
 # Ensure 'out/' folder and compiled files are included
-!out/
-!out/extension.js
+!.out/
+!.out/extension.js
+
+# Do NOT ignore TypeScript compiled files in 'out/' folder
+!out/*.js
+!out/*.js.map
 
 # Ignore unnecessary files
 .gitignore
@@ -16,5 +20,5 @@ webpack.config.js
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/eslint.config.mjs
-**/*.map
 **/.vscode-test.*
+x

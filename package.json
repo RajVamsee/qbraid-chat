@@ -2,7 +2,7 @@
   "name": "qbraid-chat",
   "displayName": "qbraid-chat",
   "description": "This is a VS Code extension that provides a chat interface for interacting with qBraid's AI models.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.97.0"
   },
