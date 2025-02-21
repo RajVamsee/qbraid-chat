@@ -15,6 +15,14 @@
       {
         "command": "qbraid-chat.myChatCommand",
         "title": "Chat with qBraid"
+      },
+      {
+        "command": "qbraid-chat.setApiKey",
+        "title": "Set qBraid API Key"
+      },
+      {
+        "command": "qbraid-chat.viewApiKey",
+        "title": "View Stored API Key"
       }
     ]
   },
