@@ -5,6 +5,10 @@ import { fetchAndStoreModels, getStoredModels } from './models';
 const API_KEY_STORAGE_KEY = 'qbraidApiKey';
 const CHAT_HISTORY_KEY = 'qbraidChatHistory';
 
+/**
+ * Activates the qBraid-Chat extension in VS Code.
+ * Registers commands for setting API keys and opening the chat interface.
+ */
 export function activate(context: vscode.ExtensionContext) {
     console.log('qBraid-Chat extension activated.');
 
@@ -31,6 +35,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(setApiKeyCommand, openChatCommand);
 }
 
+/**
+ * Opens the chat UI in a VS Code webview panel.
+ * Initializes the API key and fetches available chat models.
+ */
 async function openChatUI(context: vscode.ExtensionContext) {
     const panel = vscode.window.createWebviewPanel(
         'qbraidChat',
@@ -39,7 +47,7 @@ async function openChatUI(context: vscode.ExtensionContext) {
         { enableScripts: true }
     );
 
-    context.workspaceState.update(CHAT_HISTORY_KEY, {}); // Clear stored chat history on UI launch
+    context.workspaceState.update(CHAT_HISTORY_KEY, {}); // Clears stored chat history on UI launch
 
     const apiKey = getStoredApiKey(context);
     if (!apiKey) {
@@ -81,6 +89,10 @@ async function openChatUI(context: vscode.ExtensionContext) {
     });
 }
 
+/**
+ * Generates the HTML content for the chat UI.
+ * Includes the chat box, input field, and model selection dropdown.
+ */
 function getChatWebviewContent(models: any[], context: vscode.ExtensionContext): string {
     const modelOptions = models.map(model => `<option value="${model.model}">${model.model}</option>`).join('');
     return `
@@ -93,7 +105,7 @@ function getChatWebviewContent(models: any[], context: vscode.ExtensionContext):
         <style>
             body { font-family: Arial, sans-serif; background-color: #FFD1DC; color: #333; padding: 20px; text-align: center; }
             #chat-container { width: 90%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
-            #chat-box { height: 300px; overflow-y: auto; border: 2px solid #ff4081; border-radius: 12px; padding: 10px; background: #fff; text-align: left; margin-bottom: 10px; }
+            #chat-box { height: 300px; overflow-y: auto; border: 2px solid #ff4081; padding: 10px; background: #fff; text-align: left; margin-bottom: 10px; }
             .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
             .user-message { background-color: #ffb6c1; text-align: right; }
             .bot-message { background-color: #d3d3d3; text-align: left; }
@@ -167,7 +179,10 @@ function getChatWebviewContent(models: any[], context: vscode.ExtensionContext):
     `;
 }
 
-// **Correctly store and retrieve chat history per model**
+/**
+ * Saves the chat history per model.
+ * Each chat session is stored separately based on the model used.
+ */
 function saveChatHistory(context: vscode.ExtensionContext, model: string, userMessage: string, botResponse: string) {
     let chatHistory = context.workspaceState.get<Record<string, string[]>>(CHAT_HISTORY_KEY) || {};
     if (!chatHistory[model]) {
@@ -178,11 +193,17 @@ function saveChatHistory(context: vscode.ExtensionContext, model: string, userMe
     context.workspaceState.update(CHAT_HISTORY_KEY, chatHistory);
 }
 
+/**
+ * Retrieves the stored chat history for a selected model.
+ */
 function getChatHistory(context: vscode.ExtensionContext, model: string): string {
     let chatHistory = context.workspaceState.get<Record<string, string[]>>(CHAT_HISTORY_KEY) || {};
     return (chatHistory[model] || []).join('');
 }
 
+/**
+ * Retrieves the stored API key from global state.
+ */
 function getStoredApiKey(context: vscode.ExtensionContext): string | undefined {
     return context.globalState.get<string>(API_KEY_STORAGE_KEY);
 }

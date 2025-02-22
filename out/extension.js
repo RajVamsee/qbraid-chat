@@ -40,6 +40,10 @@ const api_1 = require("./api");
 const models_1 = require("./models");
 const API_KEY_STORAGE_KEY = 'qbraidApiKey';
 const CHAT_HISTORY_KEY = 'qbraidChatHistory';
+/**
+ * Activates the qBraid-Chat extension in VS Code.
+ * Registers commands for setting API keys and opening the chat interface.
+ */
 function activate(context) {
     console.log('qBraid-Chat extension activated.');
     let setApiKeyCommand = vscode.commands.registerCommand('qbraid-chat.setApiKey', async () => {
@@ -62,9 +66,13 @@ function activate(context) {
     });
     context.subscriptions.push(setApiKeyCommand, openChatCommand);
 }
+/**
+ * Opens the chat UI in a VS Code webview panel.
+ * Initializes the API key and fetches available chat models.
+ */
 async function openChatUI(context) {
     const panel = vscode.window.createWebviewPanel('qbraidChat', 'qBraid Chat', vscode.ViewColumn.One, { enableScripts: true });
-    context.workspaceState.update(CHAT_HISTORY_KEY, {}); // Clear stored chat history on UI launch
+    context.workspaceState.update(CHAT_HISTORY_KEY, {}); // Clears stored chat history on UI launch
     const apiKey = getStoredApiKey(context);
     if (!apiKey) {
         panel.webview.html = `<h2>Please set your API Key first.</h2>`;
@@ -99,6 +107,10 @@ async function openChatUI(context) {
         }
     });
 }
+/**
+ * Generates the HTML content for the chat UI.
+ * Includes the chat box, input field, and model selection dropdown.
+ */
 function getChatWebviewContent(models, context) {
     const modelOptions = models.map(model => `<option value="${model.model}">${model.model}</option>`).join('');
     return `
@@ -111,7 +123,7 @@ function getChatWebviewContent(models, context) {
         <style>
             body { font-family: Arial, sans-serif; background-color: #FFD1DC; color: #333; padding: 20px; text-align: center; }
             #chat-container { width: 90%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
-            #chat-box { height: 300px; overflow-y: auto; border: 2px solid #ff4081; border-radius: 12px; padding: 10px; background: #fff; text-align: left; margin-bottom: 10px; }
+            #chat-box { height: 300px; overflow-y: auto; border: 2px solid #ff4081; padding: 10px; background: #fff; text-align: left; margin-bottom: 10px; }
             .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
             .user-message { background-color: #ffb6c1; text-align: right; }
             .bot-message { background-color: #d3d3d3; text-align: left; }
@@ -184,7 +196,10 @@ function getChatWebviewContent(models, context) {
     </html>
     `;
 }
-// **Correctly store and retrieve chat history per model**
+/**
+ * Saves the chat history per model.
+ * Each chat session is stored separately based on the model used.
+ */
 function saveChatHistory(context, model, userMessage, botResponse) {
     let chatHistory = context.workspaceState.get(CHAT_HISTORY_KEY) || {};
     if (!chatHistory[model]) {
@@ -194,10 +209,16 @@ function saveChatHistory(context, model, userMessage, botResponse) {
     chatHistory[model].push(`<div class="message bot-message">Ans: ${botResponse}</div>`);
     context.workspaceState.update(CHAT_HISTORY_KEY, chatHistory);
 }
+/**
+ * Retrieves the stored chat history for a selected model.
+ */
 function getChatHistory(context, model) {
     let chatHistory = context.workspaceState.get(CHAT_HISTORY_KEY) || {};
     return (chatHistory[model] || []).join('');
 }
+/**
+ * Retrieves the stored API key from global state.
+ */
 function getStoredApiKey(context) {
     return context.globalState.get(API_KEY_STORAGE_KEY);
 }
