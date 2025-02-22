@@ -157,9 +157,19 @@ function getChatWebviewContent(models, context) {
                 const chatBox = document.getElementById("chat-box");
                 const messageDiv = document.createElement("div");
                 messageDiv.className = "message " + className;
-                messageDiv.innerHTML = text;
                 chatBox.appendChild(messageDiv);
-                chatBox.scrollTop = chatBox.scrollHeight;
+    
+                let index = 0;
+                function typeEffect() {
+                    if (index < text.length) {
+                        messageDiv.textContent += text.charAt(index);
+                        index++;
+                        setTimeout(typeEffect, 25); // Adjust typing speed
+                    }
+                }
+                typeEffect();
+
+                chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to bottom
             }
 
             window.addEventListener("message", (event) => {
