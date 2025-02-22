@@ -1,33 +1,82 @@
 # qBraid Chat - VS Code Extension
 
 ## 🚀 Assessment Details  
-**qBraid Chat** is a **Visual Studio Code extension** designed to provide an interactive chat interface with qBraid's AI models. This extension helps users to send messages and receive responses directly within VS Code.
+qBraid Chat is a Visual Studio Code extension designed to provide an interactive chat interface with qBraid's AI models. It allows users to send messages, receive responses and interact seamlessly with qBraid’s REST API. This project was built as part of an assessment challenge.
 
 ## 🔧 Tech Stack 
 - **TypeScript**  
 - **Node.js**  
-- **VS Code API**  
-- **REST API**  
-- **Webpack**  
+- **VS Code API**   
 
 ## 👤 About Me 
 **Name:** Gopala Raj  
-**Role:** Full-Stack Developer    
+**Role:** Full-Stack Developer
+**Email:** rajgopalavamsee01@gmail.com 
 
-## ⚠️ Status: Under Development  
-This project is currently **under construction**. More features, API integrations, and UI improvements will be added soon! Stay tuned for updates.  
-
-## 📌 Installation (Not Ready Yet)  
-A proper installation guide will be provided once the project reaches a stable version.  
-
----
-
-### 🛠️ To Do:  
-- [ ] API Integration with qBraid Chat  
-- [ ] UI Improvements  
-- [ ] Debugging & Error Handling  
-- [ ] Final Documentation  
+📌 Features
+-  Interactive Chat Interface – Users can send and receive messages using qBraid AI.
+-  Customizable Models – Users can select from multiple AI models provided by qBraid.
+-  API Key Management – Users can securely store their API key for authentication.
+-  VS Code WebView Panel – The chat runs inside a dedicated WebView in VS Code.
+-  Enhanced UI/UX – Clean, responsive UI with proper error handling and auto-scrolling.  
 
 ---
 
-**📌 Note:** This is a **temporary README** and will be updated as development progresses.  
+⚙️ **Installation & Setup**
+📥 Prerequisites
+- Install VS Code (Latest Version)
+- Install Node.js and npm
+
+```bash
+git clone https://github.com/RajVamsee/qbraid-chat.git
+cd qbraid-chat
+```
+
+---
+
+📦 **Install Dependencies**
+```bash
+npm install
+```
+
+---
+
+🔑 **Set API Key**
+- You need a qBraid API key to access the chat functionalities.
+- Open VS Code 
+- Run the command :
+```vbnet
+Ctrl + Shift + P → qBraid Chat: Set API Key
+```
+
+- Enter your qBraid API key when prompted.
+
+--- 
+
+🚀 **Run the Extension**
+
+```bash
+npm run compile
+code .
+```
+- Press F5 in VS Code to launch the extension in a new development window.
+
+---
+
+📜 **Instructions**
+- Open VS Code
+- Run :
+```css
+Ctrl + Shift + P → qBraid Chat: Open Chat
+```
+- Choose an AI model from the dropdown.
+- Enter a message in the text box.
+- Click Send to receive a response.
+- The response is streamed in real-time.
+
+--- 
+
+
+
+
+

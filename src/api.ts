@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
  * @returns A promise that resolves to the response data or null in case of an error.
  */
 async function fetchData<T>(url: string, apiKey: string, method: string = 'GET', body: any = null): Promise<T | null> {
-    const fetch = (await import('node-fetch')).default; // ✅ Dynamic import for node-fetch@3.x
+    const fetch = (await import('node-fetch')).default; //Dynamic import for node-fetch@3.x
 
     try {
         const options: any = {
@@ -93,7 +93,7 @@ export async function sendChatMessage(apiKey: string, model: string, message: st
     const body = {
         model,
         prompt: message, //API expects 'prompt', not 'messages'
-        stream: false    //Explicitly set stream to false (matches API example)
+        stream: false
     };
 
     console.log("Sending chat message:", JSON.stringify(body, null, 2));
