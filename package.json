@@ -25,11 +25,11 @@
   "scripts": {
     "compile": "tsc",
     "watch": "tsc --watch",
-    "package": "npm run compile && webpack --mode production --devtool hidden-source-map",
-    "vsce:package": "npm run package && vsce package"
+    "vsce:package": "npm run compile && vsce package"
   },
   "devDependencies": {
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vsce": "^2.14.0"
   },
   "dependencies": {
     "node-fetch": "^3.3.2",
