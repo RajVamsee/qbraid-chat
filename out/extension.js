@@ -111,7 +111,7 @@ function getChatWebviewContent(models, context) {
         <style>
             body { font-family: Arial, sans-serif; background-color: #FFD1DC; color: #333; padding: 20px; text-align: center; }
             #chat-container { width: 90%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
-            #chat-box { height: 300px; overflow-y: auto; border: 2px solid #ff4081; padding: 10px; background: #fff; text-align: left; margin-bottom: 10px; }
+            #chat-box { height: 300px; overflow-y: auto; border: 2px solid #ff4081; border-radius: 12px; padding: 10px; background: #fff; text-align: left; margin-bottom: 10px; }
             .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
             .user-message { background-color: #ffb6c1; text-align: right; }
             .bot-message { background-color: #d3d3d3; text-align: left; }
@@ -143,7 +143,7 @@ function getChatWebviewContent(models, context) {
                 const message = inputBox.value.trim();
                 if (!message) return;
 
-                appendMessage("User: " + message, "user-message");
+                appendMessage(message, "user-message");
                 vscode.postMessage({ command: "sendMessage", model: modelSelect.value, text: message });
                 inputBox.value = "";
             }
@@ -174,7 +174,7 @@ function getChatWebviewContent(models, context) {
 
             window.addEventListener("message", (event) => {
                 if (event.data.command === "botResponse") {
-                    appendMessage("Bot: " + event.data.botResponse, "bot-message");
+                    appendMessage("Ans: " + event.data.botResponse, "bot-message");
                 } else if (event.data.command === "updateChat") {
                     document.getElementById("chat-box").innerHTML = event.data.chatHistory;
                 }
@@ -190,8 +190,8 @@ function saveChatHistory(context, model, userMessage, botResponse) {
     if (!chatHistory[model]) {
         chatHistory[model] = [];
     }
-    chatHistory[model].push(`<div class="message user-message">User: ${userMessage}</div>`);
-    chatHistory[model].push(`<div class="message bot-message">Bot: ${botResponse}</div>`);
+    chatHistory[model].push(`<div class="message user-message">${userMessage}</div>`);
+    chatHistory[model].push(`<div class="message bot-message">Ans: ${botResponse}</div>`);
     context.workspaceState.update(CHAT_HISTORY_KEY, chatHistory);
 }
 function getChatHistory(context, model) {
